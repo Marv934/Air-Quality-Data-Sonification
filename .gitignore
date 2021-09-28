@@ -1,0 +1,9 @@
+# Exclude files in data directory
+data/*
+
+# R
+## History files
+.Rhistory
+
+## Session Data files
+.RData
