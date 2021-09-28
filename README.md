@@ -1,12 +1,12 @@
 # Air-Quality-Data-Sonification
 
-Air Qality Data Sonification is a project to make pollution audible.
+Air Qality Data Sonification is a project to make air pollution audible.
 
 It makes use of R to scrape Air Pollution Data from [SENSOR.COMMUNITY](https://sensor.community) and SuperCollider to make the data audible.
 
 ## Usage
 
-The File *scrape_sensor-community.R* provides two functions to create datasets. It scrapes the data from [archive.sensor.community](https://archive.sensor.community/).
+The File *scrape_sensor-community.R* provides two functions to create data sets. It scrapes the data from [archive.sensor.community](https://archive.sensor.community/).
 
 ```R
 create_set_inherit(id, type, start, end)
