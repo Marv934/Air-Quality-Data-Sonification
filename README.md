@@ -6,7 +6,7 @@ It makes use of R to scrape Air Pollution Data from [SENSOR.COMMUNITY](https://s
 
 ## Usage
 
-The File *scrape_sensor-community.R* provides two functions to create datasets. It scrapes the data from [archive.sensor.community](https://archive.sensor.community/).
+The File *scrape_sensor-community.R* provides two functions to create data sets. It scrapes the data from [archive.sensor.community](https://archive.sensor.community/).
 
 ```R
 create_set_inherit(id, type, start, end)
