@@ -83,7 +83,7 @@ var array_scale = [
 	[3/2, 9/4, 27/8, 81/16, 243/32, 729/64], // fifth shift
 	[3/2, 9/8, 27/16, 81/64, 243/128, 729/512], // fifth shift, transposed into one Oktave
 	[2, 3, 4, 5, 6, 7], // pure overtones
-	[3/2, 81/64, 243/128, 4/3, 243/128, 9/8] // dur Tonic ( 5, 3, 7,
+	[3/2, 81/64, 243/128, 4/3, 27/16, 9/8] // dur Tonic ( 5, 3, 7, 4, 6, 2 )
 ];
 
 var win_scale_select = ListView()
