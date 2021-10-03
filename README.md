@@ -6,7 +6,11 @@ It makes use of R to scrape Air Pollution Data from [SENSOR.COMMUNITY](https://s
 
 ## Usage
 
-The File *scrape_sensor-community.R* provides two functions to create data sets. It scrapes the data from [archive.sensor.community](https://archive.sensor.community/).
+The project is split into two parts. First, the data collection with R and than the sonification in SuperCollider.
+
+### Data collection in R
+
+The File *scrape_sensor-community.R* provides two functions to create data sets. It scrapes the data from [archive.sensor.community](https://archive.sensor.community/) and stores the result and also the raw data files in the directory ./data/*
 
 ```R
 create_set_inherit(id, type, start, end)
@@ -20,7 +24,19 @@ create_set_moving_mean(id, type, start, end, dt, tmean)
 - **dt** Timestep (in s) in created Set, eq. *3600*
 - **tmean** Time intervall (in s) to calculate moving mean over, eq *60*
 
+### Sonificaiton in SuperCollider
+
+There are severall options in the GUI to shape the sonification. First there is the fundamental frequency and amplitude for the sound. Than you can choose a scale to modify the Air-Quality-Index (AQI) to frequency mapping. This project makes use of the european Aqir-Quality-Index (EAQI) <https://airindex.eea.europa.eu>. [Sensor.communit]<https://sensor.community> provides data for the 10 and 2.5 micrometer diameter particles. You can choose the brackpoint mapping for theese in the GUI.
+
+You can try out the reference tone with the fundamental frequency and also the sonification with a value of your choise.
+
+To provide data to the sonification process chosse a .csv file and the Column in which the data is available. By pressing *Load Data* the column name is providet to check if the correct data is loaded.
+
+In the last section of the GUI you can choose the tempo for sonification. Also you can Start/Pause and Stop the process.
+
 ## Examples
+
+Here i will go trough the process of scraping and sonification 3 sets of Data. The .csv and sound files are provided in the example directory.
 
 ## Contibuting
 Fell free to edit the code and pull request your ideas.

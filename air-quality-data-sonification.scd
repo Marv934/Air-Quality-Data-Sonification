@@ -1,22 +1,25 @@
-// Source AQI (Air Quality Index):
-//  - https://en.wikipedia.org/wiki/Air_quality_index
-//  - https://airindex.eea.europa.eu
+// This file is part of Air Quality Data Sonification.
+//
+// Air Quality Data Sonification is free software: you can redistribute
+// it and/or modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// Air Quality Data Sonification is distributed in the hope that it will
+// be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+// of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Air Quality Data Sonification.
+// If not, see <http://www.gnu.org/licenses/>.
 
-//----------
-//- Server -
-//----------
+// Todo:
+// - Kommentar Dur Tonic
 
-(
-SynthDef( \Reference, {arg freq = 440, amp = 0.5;
-	Out.ar( [0, 1] , SinOsc.ar(freq, 0, amp, 0));
-}).add;
 
-SynthDef( \AQI, {arg freq = 440, freqmul = 1, amp = 0.5, ampmul = 1;
-	Out.ar( [0, 1] , SinOsc.ar(freq * freqmul, 0, amp * ampmul, 0));
-}).add;
-)
 
-(
+
 //-------
 //- GUI -
 //-------
@@ -24,8 +27,14 @@ SynthDef( \AQI, {arg freq = 440, freqmul = 1, amp = 0.5, ampmul = 1;
 //---------------
 //- Init Busses -
 //---------------
-var fundfreq = Bus.control(s, 1);
-var fundamp = Bus.control(s, 1);
+var fundfreq = Bus.control(s, 1); // fundamental frequency bus
+var fundamp = Bus.control(s, 1);  // fundamental amplitude bus
+
+//----------------------
+//- Init Synth Handler -
+//----------------------
+var reference; // reference synth
+var test; // test synth
 
 //---------------------------------
 //- Init GUI and Setup Appearance -
@@ -38,16 +47,18 @@ var h1 = Font.new( size: 18, bold: true );
 //- Start Audio setting section -
 //--------------------------------
 // Fundamental Frequency Settings
-var spec_fundfreq = ControlSpec( 60, 10000, \exp, 1 );
+var spec_fundfreq = ControlSpec( 60, 10000, \exp, 1 ); // map slider (0 - 1) to frequency range
 
 var win_fundfreq_box = NumberBox().align_( \right )
 .action_({ arg num;
+	// Set fundamental frequency bus
 	fundfreq.value = num.value;
 } )
 .valueAction_( 440 ).clipLo_( 60 ).clipHi_( 10000 );
 
 var win_fundfreq_slider = Slider()
 .action_( {
+	// set fundamental frequency box
 	win_fundfreq_box.valueAction_( spec_fundfreq.map( win_fundfreq_slider.value ) )
 } )
 .value_( spec_fundfreq.unmap( 440 ) );
@@ -55,22 +66,24 @@ var win_fundfreq_slider = Slider()
 // Fundamental Amplitude Settings
 var win_fundamp_box = NumberBox().align_( \right )
 .action_({ arg num;
+	// set fundamental amplitude bus
 	fundamp.value = num.value;
 } )
 .valueAction_( 0.5 ).clipLo_( 0 ).clipHi_( 1 );
 
 var win_fundamp_slider = Slider()
 .action_( {
+	// set fundamental amplidutde box
 	win_fundamp_box.valueAction_( win_fundamp_slider.value )
 } )
 .value_( 0.5 );
 
 // Frequency Mappig Selection
 var array_scale = [
-	[3/2, 9/4, 27/8, 81/16, 243/32, 729/64],
-	[3/2, 9/8, 27/16, 81/64, 243/128, 729/512],
-	[2, 3, 4, 5, 6, 7],
-	[3/2, 81/64, 243/128, 4/3, 243/128, 9/8]
+	[3/2, 9/4, 27/8, 81/16, 243/32, 729/64], // fifth shift
+	[3/2, 9/8, 27/16, 81/64, 243/128, 729/512], // fifth shift, transposed into one Oktave
+	[2, 3, 4, 5, 6, 7], // pure overtones
+	[3/2, 81/64, 243/128, 4/3, 243/128, 9/8] // dur Tonic ( 5, 3, 7,
 ];
 
 var win_scale_select = ListView()
@@ -86,12 +99,13 @@ var win_scale_select = ListView()
 var aqi_spec;
 
 var array_breakpoints = [
-	[0, 20, 40, 50, 100, 150, 1200], // PM 10
-	[0, 10, 20, 25, 50, 75, 800] //PM 2.5
+	[0, 20, 40, 50, 100, 150, 1200], // PM 10 micrometer
+	[0, 10, 20, 25, 50, 75, 800] //PM 2.5 micrometer
 ];
 
 var win_breakpoints_select = ListView()
 .action_( { arg sel;
+	// Set mapping from AQI to amplitude for each breakpoint
 	aqi_spec = Array.fill( array_breakpoints[ sel.value].size - 1, {arg i;
 		ControlSpec(
 			array_breakpoints[sel.value][i],
@@ -136,11 +150,13 @@ var win_settings_audio = GridLayout.columns(
 //------------------------
 // Set data value slider
 var test_ampmul = Array.fill( array_scale[ win_scale_select.value ].size, {arg i;
+	// Amplitude Busses for each breakpoint
 	Bus.control(s, 1).value_(0);
 } );
 
 var win_testdata_box = NumberBox().align_( \right )
 .action_( { arg num;
+	// Set Amplitude Busses
 	aqi_spec.do( { arg spec, i;
 		test_ampmul[i].value = ( spec.unmap( num.value ) );
 	} );
@@ -149,25 +165,25 @@ var win_testdata_box = NumberBox().align_( \right )
 
 var win_testdata_slider = Slider().orientation_( \horizontal )
 .action_( {
+	// Mapping (slider 0-1 to AQImin - AQImax)
 	var spec_testdata = ControlSpec(
 		array_breakpoints[win_breakpoints_select.value][0],
 		array_breakpoints[win_breakpoints_select.value][6],
 		\lin, 1
 	);
+	// Set AQI box from slider
 	win_testdata_box.valueAction_( spec_testdata.map( win_testdata_slider.value ) )
 } )
 .value_( 0 );
 
 // Referene Tone Start/Stop Button
-var reference;
-
 var win_reference_btn = Button()
 .action_( { arg state;
-	if( state.value == 1, {
+	if( state.value == 1, { // Start reference
 		reference = Synth( \Reference );
 		reference.map(\freq, fundfreq.index);
 		reference.map(\amp, fundamp.index);
-	}, {
+	}, { // Stop reference
 		reference.free;
 		reference = nil;
 	});
@@ -175,11 +191,9 @@ var win_reference_btn = Button()
 .states_( [["Start Reference", Color.black, Color.green], ["Stop Reference", Color.black, Color.red]] );
 
 // Referene Tone Start/Stop Button
-var test;
-
 var win_test_btn = Button()
 .action_( { arg state;
-	if( state.value == 1, {
+	if( state.value == 1, { // Start test
 		test = Array.fill( array_scale[ win_scale_select.value ].size, {arg i;
 			Synth( \AQI, [\freqmul, array_scale[ win_scale_select.value ][i] ] )
 			.map(\freq, fundfreq.index, \amp, fundamp.index, \ampmul, test_ampmul[i].index);
@@ -187,7 +201,7 @@ var win_test_btn = Button()
 		aqi_spec.do( { arg spec, i;
 			test_ampmul[i].value = ( spec.unmap( win_testdata_box.value ) );
 		} );
-	}, {
+	}, { // Stop test
 		test.do( { arg synth;
 			synth.free;
 		});
@@ -222,6 +236,7 @@ var win_file_text = TextField().string_("File Path").align_(\right);
 
 var win_file_btn = Button().states_( [["Select File"]] )
 .action_({arg state;
+	// File select Dialog
 	FileDialog({ |paths|
 		win_file_text.value = paths[0];
 	}, {
@@ -491,4 +506,17 @@ var win = Window.new( "Air Quality Data Sonification" ).front
 //----------------------
 //- End Window section -
 //----------------------
-)
+
+//------------------------
+//- Start Server section -
+//------------------------
+SynthDef( \Reference, {arg freq = 440, amp = 0.5;
+	Out.ar( [0, 1] , SinOsc.ar(freq, 0, amp, 0));
+}).add;
+
+SynthDef( \AQI, {arg freq = 440, freqmul = 1, amp = 0.5, ampmul = 1;
+	Out.ar( [0, 1] , SinOsc.ar(freq * freqmul, 0, amp * ampmul, 0));
+}).add;
+//----------------------
+//- End Server section -
+//----------------------
