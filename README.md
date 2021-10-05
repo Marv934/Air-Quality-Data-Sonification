@@ -73,7 +73,7 @@ Example files are provides in the *examples* directory.
 ![Data Plot - Second Example](examples/2021-09-20_2021-09-26_sds011_sensor_5710/Week-2021-09-20_2021-09-26_ID-5710_Type-sds011.png)
 
 3. One Year (2020) of PM10 data from Sensor **5710** (type sds011), Fifth Shift Scale.
-![Data Plot - Second Example](examples/2021-09-20_2021-09-26_sds011_sensor_5710/Week-2021-09-20_2021-09-26_ID-5710_Type-sds011.png)
+![Data Plot - Third Example](examples/2020_sds011_sensor_5710/Year-2020_ID-5710_Type-sds011.png)
 
 ## Contibuting
 Fell free to edit the code and pull request your ideas.
