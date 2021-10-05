@@ -66,12 +66,14 @@ Here i will go through the process of scraping and sonification data sets.
 ### Examples
 
 Example files are provides in the *examples* directory.
-1. One Day (29.09.2021) of PM10 data from Sensor **34719** (type sds011).
+1. One Day (29.09.2021) of PM10 data from Sensor **34719** (type sds011), Fifth Shift Scale.
 ![Data Plot - First Example](examples/2021-09-29_sds011_sensor_34719/Day-2021-09-29_ID-34719_Type-sds011.png)
-<html>
-<audio controls>
-  <source src="examples/2021-09-29_sds011_sensor_34719/Day-2021-09-29_ID-34719_Type-sds011.wav" type="audio/wav">
-</audio></html>
+
+2. One Week (20.09.2021 - 26.09.2021) of PM2.5 data from Sensor **5710** (type sds011), Dur Tonic Scale.
+![Data Plot - Second Example](examples/2021-09-20_2021-09-26_sds011_sensor_5710/Week-2021-09-20_2021-09-26_ID-5710_Type-sds011.png)
+
+3. One Year (2020) of PM10 data from Sensor **5710** (type sds011), Fifth Shift Scale.
+![Data Plot - Second Example](examples/2021-09-20_2021-09-26_sds011_sensor_5710/Week-2021-09-20_2021-09-26_ID-5710_Type-sds011.png)
 
 ## Contibuting
 Fell free to edit the code and pull request your ideas.
