@@ -20,6 +20,7 @@
 library(readr)
 library(dplyr)
 library(RCurl)
+library(ggplot2)
 
 get_data <- function(id, type, start, end) {
   ##############################################################################
@@ -52,7 +53,7 @@ get_data <- function(id, type, start, end) {
     } else { # Download file from archive.sensor.community
       
       # Construct URL
-      url <- paste0('https://archive.sensor.community/',theDate,'/',file)
+      url <- paste0('http://archive.sensor.community/',theDate,'/',file)
       
       # Download file
       out <- tryCatch(
@@ -148,9 +149,9 @@ create_set_inherit <- function(id, type, start, end) {
   # Here could go some statistic magic
   
   # Construct file name and save data
-  path <- paste0('data/set_inherit',start,'_',end,'_',type,'_sensor_',id,'.csv')
+  path <- paste0('data/set_inherit',gsub(":", "-", start),'_',gsub(":", "-", end),'_',type,'_sensor_',id,'.csv')
   write.csv(data, file = path)
-  
+
   # Return data
   return(path)
 }
@@ -236,3 +237,45 @@ create_set_moving_mean <- function(id, type, start, end, dt, tmean) {
   return(data_mean)
 }
 ## END OF FUNCTION create_set_moving_mean
+
+plot_set <- function(path, title) {
+  ##############################################################################
+  # Plot data in file                                                          #
+  # Input:  - path: Path to data set                                           #
+  #         - output: output file                                              #
+  # Retruns: Path to plot                                                      #
+  ##############################################################################
+  
+  # Load data
+  data <- read.csv(path)
+  
+  plot <- ggplot(data = data, aes(x = as.POSIXct(timestamp)))
+  
+  # check if colum exists in data
+  if( "P1" %in% colnames(data) ) { # P1 exists
+    plot <- plot + geom_point( aes(y=P1, colour = "PM2.5"))
+  }
+  if( "P2" %in% colnames(data) ) { # P2 exists
+    plot <- plot + geom_point( aes(y=P2, colour = "PM10"))
+  }
+  if( "moving_mean_P1" %in% colnames(data) ) { # P1 moving mean exists
+    plot <- plot + geom_point( aes(y=moving_mean_P1, colour = "Moving Mean PM2.5"))
+  }
+  if( "moving_mean_P2" %in% colnames(data) ) { # P2 moving mean exists
+    plot <- plot + geom_point( aes(y=moving_mean_P2, colour = "Moving Mean PM10"))
+  }
+  
+  # edit plot
+  plot <- plot + scale_colour_manual("", 
+                                     breaks = c("PM2.5", "Moving Mean PM2.5", "PM10", "Movin Mean PM10"),
+                                     values = c("PM2.5" = "blue", "PM10" = "red",  
+                                                "Moving Mean PM2.5" = "black", "Movin Mean PM10" = "purple")) +
+      xlab("Date") + ylab("µg/m³") + labs(title = paste0("Air Quality Data\n", title))
+  
+  # save plot
+  path = paste0("plots/", title, ".png")
+  ggsave(path, plot = plot)
+  
+  return(path)
+}
+## END OF FUNCTION plot set

@@ -67,16 +67,16 @@ var win_fundfreq_slider = Slider()
 var win_fundamp_box = NumberBox().align_( \right )
 .action_({ arg num;
 	// set fundamental amplitude bus
-	fundamp.value = num.value;
+	fundamp.value = num.value/5;
 } )
-.valueAction_( 0.5 ).clipLo_( 0 ).clipHi_( 1 );
+.valueAction_( 0.9 ).clipLo_( 0 ).clipHi_( 1 );
 
 var win_fundamp_slider = Slider()
 .action_( {
 	// set fundamental amplidutde box
 	win_fundamp_box.valueAction_( win_fundamp_slider.value )
 } )
-.value_( 0.5 );
+.value_( 0.9 );
 
 // Frequency Mappig Selection
 var array_scale = [
@@ -115,8 +115,8 @@ var win_breakpoints_select = ListView()
 	} );
 })
 .items_( [
-	"PM 10",
-	"PM 2.5",
+	"PM 10  (P1)",
+	"PM 2.5 (P2)",
 ] )
 .selectionMode_( \single )
 .valueAction_( 0 );
@@ -140,7 +140,8 @@ var win_settings_audio = GridLayout.columns(
 		StaticText().string_("Select Breakpoints"),
 		win_breakpoints_select
 	]
-);
+)
+.setMinRowHeight(1, 200);
 //----------------------------
 // End Audio setting section -
 //----------------------------
@@ -249,8 +250,13 @@ var win_datacolum_box = NumberBox().action_( ).value_(0).align_(\right);
 
 var win_datacolum_text = StaticText().string_("No Data Loaded");
 
+// Select Time colum
+var win_timecolum_box = NumberBox().action_( ).value_(0).align_(\right);
+
+var win_timecolum_text = StaticText().string_("No Data Loaded");
+
 // Load Data
-var data;
+var data, timestamp;
 
 var win_loaddata_btn = Button().states_( [["Load Data"]] )
 .action_( {arg state;
@@ -261,12 +267,15 @@ var win_loaddata_btn = Button().states_( [["Load Data"]] )
 
 	// Remove Header
 	win_datacolum_text.string_(raw_data[0][win_datacolum_box.value]);
+	win_timecolum_text.string_(raw_data[0][win_timecolum_box.value]);
 	raw_data.removeAt(0);
 
 	// Store requiered data
 	data = Array.newClear;
+	timestamp = Array.newClear;
 	raw_data.do( {arg line, i;
 		data = data.add(line[win_datacolum_box.value].asFloat);
+		timestamp = timestamp.add(line[win_timecolum_box.value]);
 	});
 } );
 
@@ -276,9 +285,13 @@ var win_loading = GridLayout.rows(
 		win_file_btn,
 		[ win_file_text, columns:2 ]
 	], [
-		StaticText().string_("Select Air Quality Data Column"),
+		StaticText().string_("Select Air Quality Data Colum"),
 		win_datacolum_box,
 		win_datacolum_text
+	], [
+		StaticText().string_("Select Timestamp Data Colum"),
+		win_timecolum_box,
+		win_timecolum_text
 	], [
 		[ win_loaddata_btn, columns:3 ]
 	]
@@ -303,14 +316,38 @@ var win_bpm_box = NumberBox().align_(\right)
 })
 .valueAction_(120);
 
+// Record Button
+var recorder;
+
+var win_record_btn = Button().states_( [["Record"], ["Record", Color.black, Color.red]])
+.action_( {arg state;
+
+	// check if recording
+	if( state.value == 1, { // is not recording
+
+		// init recorder
+		recorder = Recorder.new(s);
+		recorder.recHeaderFormat_("wav");
+
+		//start recorder
+		recorder.record;
+	}, { // is recording
+
+		// stop recorder
+		recorder.stopRecording;
+	});
+});
+
 // Sonification Task
 var task_sonify = Task({
 	// Calculate waiting time
-	var dt = 0.01; //60/bpm;
+	var dt = 60/bpm;
 
 	// Loop trough data
 	data.do({ arg value, counter;
-		"AQI: ".post;
+		"Timestamp: ".post;
+		timestamp[counter].post;
+		"; AQI: ".post;
 		value.postln;
 
 		// Map AQI to ampmul
@@ -321,9 +358,12 @@ var task_sonify = Task({
 	});
 
 	// Stop Synth
-	//sonify.do({ arg synth;
-	//	synth.free;
-	//});
+	sonify.do({ arg synth;
+		synth.free;
+	});
+	sonify = nil;
+	reference.free;
+	reference = nil;
 });
 
 // Play Button
@@ -353,7 +393,6 @@ var win_play_btn = Button().states_( [["Play"], ["Play", Color.black, Color.gree
 			win_test_btn.value_( 0 );
 			test = nil;
 		});
-
 		// Start Synth
 		sonify = Array.fill( array_scale[ win_scale_select.value ].size, {arg i;
 			Synth( \AQI, [\freqmul, array_scale[ win_scale_select.value ][i] ] )
@@ -382,6 +421,8 @@ var win_pause_btn = Button().states_( [["Pause", Color.black, Color.yellow], ["R
 				synth.free;
 			});
 			reference.free;
+			sonify = nil;
+			reference = nil;
 
 			win_reference_btn.value_(0);
 		}, { // and paused
@@ -434,6 +475,8 @@ var win_stop_btn = Button().states_( [["Stop", Color.black, Color.red]] )
 				synth.free;
 			});
 			reference.free;
+			sonify = nil;
+			reference = nil;
 		} );
 		task_sonify.reset;
 
@@ -452,6 +495,8 @@ var win_playback = GridLayout.rows(
 		win_play_btn,
 		win_pause_btn,
 		win_stop_btn
+	], [
+		[ win_record_btn, columns:3]
 	]
 );
 

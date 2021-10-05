@@ -1,5 +1,7 @@
 # Air-Quality-Data-Sonification
 
+***Important!***: Due to some problems with RStudio in Windows handling SSL Certificates, I removed *https* from the R script.
+
 Air Qality Data Sonification is a project to make air pollution audible.
 
 It makes use of R to scrape Air Pollution Data from [SENSOR.COMMUNITY](https://sensor.community) and SuperCollider to make the data audible.
@@ -24,9 +26,11 @@ create_set_moving_mean(id, type, start, end, dt, tmean)
 - **dt** Timestep (in s) in created Set, eq. *3600*
 - **tmean** Time intervall (in s) to calculate moving mean over, eq *60*
 
+To have a look at the downloaded data, you can use the *plot_set("path to .csv file", "title")* function.
+
 ### Sonificaiton in SuperCollider
 
-There are severall options in the GUI to shape the sonification. First there is the fundamental frequency and amplitude for the sound. Than you can choose a scale to modify the Air-Quality-Index (AQI) to frequency mapping. This project makes use of the european Aqir-Quality-Index (EAQI) <https://airindex.eea.europa.eu>. [Sensor.communit]<https://sensor.community> provides data for the 10 and 2.5 micrometer diameter particles. You can choose the brackpoint mapping for theese in the GUI.
+There are severall options in the GUI to shape the sonification. First there is the fundamental frequency and amplitude for the sound. Than you can choose a scale to modify the Air-Quality-Index (AQI) to frequency mapping. This project makes use of the european Aqir-Quality-Index (EAQI) <https://airindex.eea.europa.eu>. [Sensor.community]<https://sensor.community> provides data for the 10 and 2.5 micrometer diameter particles. You can choose the brackpoint mapping for theese in the GUI.
 
 You can try out the reference tone with the fundamental frequency and also the sonification with a value of your choise.
 
@@ -34,9 +38,40 @@ To provide data to the sonification process chosse a .csv file and the Column in
 
 In the last section of the GUI you can choose the tempo for sonification. Also you can Start/Pause and Stop the process.
 
-## Examples
+### Walk Through
 
-Here i will go trough the process of scraping and sonification 3 sets of Data. The .csv and sound files are provided in the example directory.
+Here i will go through the process of scraping and sonification data sets.
+
+#### Create data set
+
+1. Go to [maps.sensor.community]<https://maps.sensor.community>
+2. Search for a Sensor you want to create a data set for
+3. Select the Sensor by clicking the location and note the ID
+![Select a Sensor on maps.sensor.community](documentation/maps.sensor.community.png)
+4. Go to [archive.sensor.community]<https://archive.sensor.community> and select the folder for the first data you want the data for (It is possible, that the sensor was not installed jet on the desired date!).
+5. Search (strg+f) for your Sensor ID in the *.csv* files and note the Sensor Type. The Script is only tested for *sds011* jet. Other types are *dht22* and *bme280*.
+![Search for Sensor Type in archive.sensor.community](documentation/archive.sensor.community.png)
+6. Open an R terminal and load the provided functions (*source("scrape_sensor-community.R*))
+7. Run a function according to section *Usage - Data collection in R*
+
+#### Sonify data set
+1. Open *air-quality-data-sonification.scd*, boot the SupcerCollider server.
+2. Start the GUI with running the whole file (strg+a, strg+enter).
+3. Select File and than AQI and Timestamp data colum. Click Load Data and check if the correct data is loaded.
+![SuperCollider GUI - Load Data](documentation/SC-GUI_load-data.png)
+4. Click Record if you want to save the sonification as a .wav file (The recording starts immediately).
+5. Play it with the Play button.
+6. Play arround with the Settings.
+
+### Examples
+
+Example files are provides in the *examples* directory.
+1. One Day (29.09.2021) of PM10 data from Sensor **34719** (type sds011).
+![Data Plot - First Example](examples/2021-09-29_sds011_sensor_34719/set_inherit2021-09-29 00-00-00_2021-09-29 23-59-59_sds011_sensor_34719.png)
+<html>
+<audio controls>
+  <source src="examples/2021-09-29_sds011_sensor_34719/set_inherit2021-09-29 00-00-00_2021-09-29 23-59-59_sds011_sensor_34719.wav" type="audio/wav">
+</audio></html>
 
 ## Contibuting
 Fell free to edit the code and pull request your ideas.

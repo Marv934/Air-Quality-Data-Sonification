@@ -1,5 +1,9 @@
 # Exclude files in data directory
 data/*
+# Exclude files in recordings directory
+recordings/*
+# Exclude files in plots directory
+plots/*
 
 # R
 ## History files
