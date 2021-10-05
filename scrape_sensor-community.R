@@ -114,6 +114,10 @@ create_set_inherit <- function(id, type, start, end) {
   # Returns: Path to data set .csv File or Error Message                       #
   ##############################################################################
   
+  if( !dir.exists("data") ) { # data dir does not exists
+    dir.create("data")
+  }
+  
   # Scrape Data if not already in data directory
   error <- get_data(id, type, start, end)
   if( error == 0 ) { # Everything OK
@@ -149,7 +153,7 @@ create_set_inherit <- function(id, type, start, end) {
   # Here could go some statistic magic
   
   # Construct file name and save data
-  path <- paste0('data/set_inherit',gsub(":", "-", start),'_',gsub(":", "-", end),'_',type,'_sensor_',id,'.csv')
+  path <- paste0('data/set_inherit',gsub(" ", "_", gsub(":", "-", start)),'_', gsub(" ", "_", gsub(":", "-", end)),'_',type,'_sensor_',id,'.csv')
   write.csv(data, file = path)
 
   # Return data
@@ -168,6 +172,10 @@ create_set_moving_mean <- function(id, type, start, end, dt, tmean) {
   # Retruns: Path to dataset .csv File or Error Message                        #
   ##############################################################################
 
+  if( !dir.exists("data") ) { # data dir does not exists
+    dir.create("data")
+  }
+  
   # Scrape Data if not already in data directory
   error <- get_data(id, type, start, end)
   if( error == 0 ) { # Everything OK
@@ -190,7 +198,10 @@ create_set_moving_mean <- function(id, type, start, end, dt, tmean) {
     file <- paste0('data/', date, '_', type, '_sensor_', id,'.csv')
     
     # Read data
-    data <- rbind(data, read.csv(file))
+    data_date <- read.csv(file)
+    if( ncol(data_date) > 2 ) {
+      data <- rbind(data, data_date)
+    }
     
     # Itterate
     date = date + 1
@@ -215,7 +226,11 @@ create_set_moving_mean <- function(id, type, start, end, dt, tmean) {
     out = calc_moving_mean(now, data, tmean)
     
     # Write to vector
-    timestamp <- c(timestamp, paste0(now))
+    if ( is.na(as.POSIXlt(strptime(now, "%Y-%m-%d %H:%M:%S"))) ) { # Add 00:00:00
+      timestamp <- c(timestamp, paste0(format(as.POSIXlt(now,format="%Y-%m-%d"),format="%Y-%m-%d %H:%M:%S")))
+    } else {
+      timestamp <- c(timestamp, paste0(now))
+    }
     moving_mean_P1 <- c(moving_mean_P1, out[1])
     moving_mean_P2 <- c(moving_mean_P2, out[2])
     
@@ -230,11 +245,11 @@ create_set_moving_mean <- function(id, type, start, end, dt, tmean) {
   # Here could go some statistic magic
   
   # Construct file name and save data
-  path <- paste0('data/set_dt_',dt,'_tmean_',tmean,start,'_',end,'_',type,'_sensor_',id,'.csv')
+  path <- paste0('data/set_dt_',dt,'_tmean_',tmean,gsub(" ", "_", gsub(":", "-", start)),'_', gsub(" ", "_", gsub(":", "-", end)),'_',type,'_sensor_',id,'.csv')
   write.csv(data_mean, file = path)
   
   # Return Data
-  return(data_mean)
+  return(path)
 }
 ## END OF FUNCTION create_set_moving_mean
 
@@ -245,6 +260,10 @@ plot_set <- function(path, title) {
   #         - output: output file                                              #
   # Retruns: Path to plot                                                      #
   ##############################################################################
+  
+  if( !dir.exists("plots") ) { # data dir does not exists
+    dir.create("plots")
+  }
   
   # Load data
   data <- read.csv(path)
@@ -259,21 +278,20 @@ plot_set <- function(path, title) {
     plot <- plot + geom_point( aes(y=P2, colour = "PM10"))
   }
   if( "moving_mean_P1" %in% colnames(data) ) { # P1 moving mean exists
-    plot <- plot + geom_point( aes(y=moving_mean_P1, colour = "Moving Mean PM2.5"))
+    plot <- plot + geom_point( aes(y=moving_mean_P1, colour = "PM2.5"))
   }
   if( "moving_mean_P2" %in% colnames(data) ) { # P2 moving mean exists
-    plot <- plot + geom_point( aes(y=moving_mean_P2, colour = "Moving Mean PM10"))
+    plot <- plot + geom_point( aes(y=moving_mean_P2, colour = "PM10"))
   }
   
   # edit plot
   plot <- plot + scale_colour_manual("", 
-                                     breaks = c("PM2.5", "Moving Mean PM2.5", "PM10", "Movin Mean PM10"),
-                                     values = c("PM2.5" = "blue", "PM10" = "red",  
-                                                "Moving Mean PM2.5" = "black", "Movin Mean PM10" = "purple")) +
+                                     breaks = c("PM2.5", "PM10"),
+                                     values = c("PM2.5" = "blue", "PM10" = "red")) +
       xlab("Date") + ylab("µg/m³") + labs(title = paste0("Air Quality Data\n", title))
   
   # save plot
-  path = paste0("plots/", title, ".png")
+  path = paste0("plots/", gsub(" ", "_", gsub(":", "-", title)), ".png")
   ggsave(path, plot = plot)
   
   return(path)

@@ -67,10 +67,10 @@ Here i will go through the process of scraping and sonification data sets.
 
 Example files are provides in the *examples* directory.
 1. One Day (29.09.2021) of PM10 data from Sensor **34719** (type sds011).
-![Data Plot - First Example](examples/2021-09-29_sds011_sensor_34719/set_inherit2021-09-29 00-00-00_2021-09-29 23-59-59_sds011_sensor_34719.png)
+![Data Plot - First Example](examples/2021-09-29_sds011_sensor_34719/Day-2021-09-29_ID-34719_Type-sds011.png)
 <html>
 <audio controls>
-  <source src="examples/2021-09-29_sds011_sensor_34719/set_inherit2021-09-29 00-00-00_2021-09-29 23-59-59_sds011_sensor_34719.wav" type="audio/wav">
+  <source src="examples/2021-09-29_sds011_sensor_34719/Day-2021-09-29_ID-34719_Type-sds011.wav" type="audio/wav">
 </audio></html>
 
 ## Contibuting
