@@ -14,12 +14,6 @@
 // along with Air Quality Data Sonification.
 // If not, see <http://www.gnu.org/licenses/>.
 
-// Todo:
-// - Kommentar Dur Tonic
-
-
-
-
 //-------
 //- GUI -
 //-------
@@ -326,6 +320,7 @@ var win_record_btn = Button().states_( [["Record"], ["Record", Color.black, Colo
 	if( state.value == 1, { // is not recording
 
 		// init recorder
+		thisProcess.platform.recordingsDir = "./recordings/";
 		recorder = Recorder.new(s);
 		recorder.recHeaderFormat_("wav");
 

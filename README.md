@@ -4,7 +4,7 @@
 
 Air Qality Data Sonification is a project to make air pollution audible.
 
-It makes use of R to scrape Air Pollution Data from [SENSOR.COMMUNITY](https://sensor.community) and SuperCollider to make the data audible.
+It makes use of R to scrape Air Pollution Data from [sensor.community](https://sensor.community) and SuperCollider to make the data audible.
 
 ## Usage
 
@@ -30,7 +30,7 @@ To have a look at the downloaded data, you can use the *plot_set("path to .csv f
 
 ### Sonificaiton in SuperCollider
 
-There are severall options in the GUI to shape the sonification. First there is the fundamental frequency and amplitude for the sound. Than you can choose a scale to modify the Air-Quality-Index (AQI) to frequency mapping. This project makes use of the european Aqir-Quality-Index (EAQI) <https://airindex.eea.europa.eu>. [Sensor.community]<https://sensor.community> provides data for the 10 and 2.5 micrometer diameter particles. You can choose the brackpoint mapping for theese in the GUI.
+There are severall options in the GUI to shape the sonification. First there is the fundamental frequency and amplitude for the sound. Than you can choose a scale to modify the Air-Quality-Index (AQI) to frequency mapping. This project makes use of the [european Aqir-Quality-Index (EAQI)](https://airindex.eea.europa.eu). [Sensor.community](https://sensor.community) provides data for the 10 and 2.5 micrometer diameter particles. You can choose the brackpoint mapping for theese in the GUI.
 
 You can try out the reference tone with the fundamental frequency and also the sonification with a value of your choise.
 
@@ -44,11 +44,11 @@ Here i will go through the process of scraping and sonification data sets.
 
 #### Create data set
 
-1. Go to [maps.sensor.community]<https://maps.sensor.community>
+1. Go to [maps.sensor.community](https://maps.sensor.community)
 2. Search for a Sensor you want to create a data set for
 3. Select the Sensor by clicking the location and note the ID
 ![Select a Sensor on maps.sensor.community](documentation/maps.sensor.community.png)
-4. Go to [archive.sensor.community]<https://archive.sensor.community> and select the folder for the first data you want the data for (It is possible, that the sensor was not installed jet on the desired date!).
+4. Go to [archive.sensor.community](https://archive.sensor.community) and select the folder for the first data you want the data for (It is possible, that the sensor was not installed jet on the desired date!).
 5. Search (strg+f) for your Sensor ID in the *.csv* files and note the Sensor Type. The Script is only tested for *sds011* jet. Other types are *dht22* and *bme280*.
 ![Search for Sensor Type in archive.sensor.community](documentation/archive.sensor.community.png)
 6. Open an R terminal and load the provided functions (*source("scrape_sensor-community.R*))
